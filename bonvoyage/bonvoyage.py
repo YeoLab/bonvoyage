@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import NMF
 
+from modish import ModalityEstimator
+
 def bin_range_strings(bins):
     """Given a list of bins, make a list of strings of those bin ranges
 
@@ -42,7 +44,7 @@ def binify(data, bins):
     """
     if bins is None:
         raise ValueError('"bins" cannot be None')
-    binned = df.apply(lambda x: pd.Series(np.histogram(x, bins=bins)[0]))
+    binned = data.apply(lambda x: pd.Series(np.histogram(x, bins=bins)[0]))
     binned.index = bin_range_strings(bins)
 
     # Normalize so each column sums to 1
@@ -59,8 +61,15 @@ class VoyageSpace(object):
     near1_label = '~1'
     near0_label = '~0'
 
-    seed_data = None
+    xlabel = near1_label
+    ylabel = near0_label
 
+    near0_binned = [1] + [0] * 9
+    near1_binned = near0_binned[::-1]
+    seed_data = pd.DataFrame(
+        # Use two near1_binned to ensure the x-axis is near-1
+        [near0_binned, near1_binned, near1_binned]).T
+    
     def __init__(self):
         self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
         self.nmf.fit(self.seed_data)
@@ -123,24 +132,24 @@ class VoyageSpace(object):
 
     def _is_nmf_space_x_axis_excluded(self, groupby):
         nmf_space_positions = self.nmf_space_positions(groupby)
-    
+
         # Get the correct included/excluded labeling for the x and y axes
         event, phenotype = nmf_space_positions.pc_1.argmax()
         top_pc1_samples = self.data.groupby(groupby).groups[
             phenotype]
-    
+
         data = self._subset(self.data, sample_ids=top_pc1_samples)
         binned = self.binify(data)
         return bool(binned[event][0])
-    
-    
+
+
     def _nmf_space_xlabel(self, groupby):
         if self._is_nmf_space_x_axis_excluded(groupby):
             return self.near0_label
         else:
             return self.near1_label
-    
-    
+
+
     def _nmf_space_ylabel(self, groupby):
         if self._is_nmf_space_x_axis_excluded(groupby):
             return self.near1_label
