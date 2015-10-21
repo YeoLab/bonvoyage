@@ -121,3 +121,83 @@ class VoyageSpace(object):
 
     def binify(self, data):
         return binify(data, self.bins)
+
+
+def single_voyage_distance(positions, transitions):
+    """Get NMF distance of a single feature between phenotype transitions
+
+    Parameters
+    ----------
+    positions : pandas.DataFrame
+        A ((n_features, phenotypes), 2) MultiIndex dataframe of the NMF
+        positions of splicing events for different phenotypes
+    transitions : list of 2-string tuples
+        List of (phenotype1, phenotype2) transitions
+
+    Returns
+    -------
+    transitions : pandas.DataFrame
+        A (n_features, n_transitions) DataFrame of the NMF distances
+        of features between different phenotypes
+    """
+    # positions_phenotype = positions.copy()
+    # positions_phenotype.index = positions_phenotype.index.droplevel(1)
+    distances = pd.Series(index=transitions)
+    # lines = []
+    for transition in transitions:
+        try:
+            phenotype1, phenotype2 = transition
+            norm = np.linalg.norm(positions.loc[phenotype2] -
+                                  positions.loc[phenotype1])
+            # print phenotype1, phenotype2, norm
+            # line = list(transitions).append(norm)
+            # lines.append(line)
+            distances[transition] = norm
+        except KeyError:
+            pass
+    # distances = pd.DataFrame(lines, columns=['group1', 'group2',
+    #                                          'voyage_distance'])
+    return distances
+
+
+def voyage_distances(voyage_positions, transitions):
+    """Get distance in NMF space of different splicing events
+
+    Parameters
+    ----------
+    voyage_positions : pandas.DataFrame
+        A ((group, features), 2) multiindexed dataframe with the groups labeled
+        in the transitions as the first level on the rows, and the feature ids
+        as the second level. Exactly the output from a
+    transitions : list of str pairs
+        Which phenotype follows from one to the next, for calculating
+        distances between features
+    n : int or float
+        If int, then this is the absolute number of cells that are minimum
+        required to calculate. If a float, then require this
+        fraction of samples to calculate, e.g. if 0.6, then at
+        least 60% of samples must have an event detected for voyage space
+    Returns
+    -------
+    nmf_space_transitions : pandas.DataFrame
+        A (n_events, n_phenotype_transitions) sized DataFrame of the
+        distances of these events in NMF space
+    """
+
+    distances = voyage_positions.groupby(
+        level=1, axis=0, as_index=True, group_keys=False).apply(
+        single_voyage_distance, transitions=transitions)
+
+    # Remove any events that didn't have phenotype pairs from
+    # the transitions
+    distances = distances.dropna(how='all', axis=0)
+
+    # Make this into a tidy dataframe
+    distances_df = distances.unstack().reset_index()
+    distances_df['group1'] = distances_df['level_0'].map(lambda x: x[0])
+    distances_df['group2'] = distances_df['level_0'].map(lambda x: x[1])
+    distances_df = distances_df.rename(
+        columns={'level_1': 'feature', 0: 'voyage_distance'})
+    distances_df = distances_df.drop('level_0', axis=1)
+
+    return distances_df
