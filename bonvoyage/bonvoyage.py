@@ -129,29 +129,3 @@ class VoyageSpace(object):
         binned = self.binify(data)
         reduced = self.nmf.transform(binned.T)
         return reduced
-
-    def _is_nmf_space_x_axis_excluded(self, groupby):
-        nmf_space_positions = self.nmf_space_positions(groupby)
-
-        # Get the correct included/excluded labeling for the x and y axes
-        event, phenotype = nmf_space_positions.pc_1.argmax()
-        top_pc1_samples = self.data.groupby(groupby).groups[
-            phenotype]
-
-        data = self._subset(self.data, sample_ids=top_pc1_samples)
-        binned = self.binify(data)
-        return bool(binned[event][0])
-
-
-    def _nmf_space_xlabel(self, groupby):
-        if self._is_nmf_space_x_axis_excluded(groupby):
-            return self.near0_label
-        else:
-            return self.near1_label
-
-
-    def _nmf_space_ylabel(self, groupby):
-        if self._is_nmf_space_x_axis_excluded(groupby):
-            return self.near1_label
-        else:
-            return self.near0_label
