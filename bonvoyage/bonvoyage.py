@@ -67,8 +67,9 @@ class VoyageSpace(object):
     near0_binned = [1] + [0] * 9
     near1_binned = near0_binned[::-1]
     seed_data = pd.DataFrame(
-        # Use two near1_binned to ensure the x-axis is near-1
-        [near0_binned, near1_binned, near1_binned]).T
+        # Use two near0_binned to ensure the x-axis is near-0, i.e. that 0th
+        # axis is near-0
+        [near0_binned, near0_binned, near1_binned])
     
     def __init__(self):
         self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
@@ -120,12 +121,3 @@ class VoyageSpace(object):
 
     def binify(self, data):
         return binify(data, self.bins)
-
-    def binned_nmf_reduced(self, sample_ids=None, feature_ids=None,
-                           data=None):
-        if data is None:
-            data = self._subset(self.data, sample_ids, feature_ids,
-                                require_min_samples=False)
-        binned = self.binify(data)
-        reduced = self.nmf.transform(binned.T)
-        return reduced
