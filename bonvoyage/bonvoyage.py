@@ -61,8 +61,8 @@ class VoyageSpace(object):
     near1_label = '~1'
     near0_label = '~0'
 
-    xlabel = near1_label
-    ylabel = near0_label
+    xlabel = near0_label
+    ylabel = near1_label
 
     near0_binned = [1] + [0] * 9
     near1_binned = near0_binned[::-1]
