@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def switchy_score(array):
     """Transform a 1D array of data scores to a vector of "switchy scores"
@@ -62,3 +63,11 @@ def arrowplot(*args, **kwargs):
         dy = y2 - y1
         ax.arrow(x1, y1, dx, dy, head_width=0.005, head_length=0.005, #fc='k', ec='k',
                  alpha=0.25, **kwargs)
+
+def hexbin(x, y, *args, **kwargs):
+    """Wrapper around hexbin to create a colormap from provided color"""
+    ax = kwargs['ax'] if 'ax' in kwargs else plt.gca()
+    color = kwargs.pop('color', 'k')
+    cmap = sns.light_palette(color, as_cmap=True)
+
+    ax.hexbin(x, y, cmap=cmap, *args, **kwargs)
