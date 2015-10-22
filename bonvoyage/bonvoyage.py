@@ -127,7 +127,7 @@ DISTANCE_COLUMNS = ['group1', 'group2', 'voyage_distance', 'delta_x',
                     'delta_y', 'direction']
 
 
-def voyage_distances(voyage_positions, transitions):
+def distances(voyage_positions, transitions):
     """Get distance in NMF space of different splicing events
 
     Parameters
@@ -177,12 +177,12 @@ def voyage_distances(voyage_positions, transitions):
     distances = pd.concat(deltas, ignore_index=True)
     distances = distances.rename(columns={0: 'delta_x', 1: 'delta_y',
                                           'index': 'event_id'})
-    distances['direction'] = distances.apply(voyage_direction, axis=1)
+    distances['direction'] = distances.apply(direction, axis=1)
 
     return distances
 
 
-def voyage_direction(row):
+def direction(row):
     dx = row['delta_x']
     dy = row['delta_y']
     if dx > 0 and dy > 0:
@@ -194,7 +194,7 @@ def voyage_direction(row):
     elif dx <= 0 and dy > 0:
         # Towards upper left --> ~1
         return r'$\nwarrow$'
-    elif dx < 0 and dy < 0:
+    elif dx <= 0 and dy <= 0:
         # Towards origin/lower left --> middle
         return r'$\swarrow$'
     else:
