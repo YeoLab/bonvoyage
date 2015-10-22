@@ -178,6 +178,7 @@ def distances(voyage_positions, transitions):
     distances = distances.rename(columns={0: 'delta_x', 1: 'delta_y',
                                           'index': 'event_id'})
     distances['direction'] = distances.apply(direction, axis=1)
+    distances['transition'] = distances['group1'] + '-' + distances['group2']
 
     return distances
 
