@@ -147,12 +147,13 @@ def single_voyage_distance(positions, transitions):
     for transition in transitions:
         try:
             phenotype1, phenotype2 = transition
-            norm = np.linalg.norm(positions.loc[phenotype2] -
-                                  positions.loc[phenotype1])
+            delta_x, delta_y = positions.loc[phenotype2] - positions.loc[phenotype1]
+            norm = np.linalg.norm([delta_x, delta_y])
             # print phenotype1, phenotype2, norm
             # line = list(transitions).append(norm)
             # lines.append(line)
             distances[transition] = norm
+            # distances
         except KeyError:
             pass
     # distances = pd.DataFrame(lines, columns=['group1', 'group2',
@@ -201,3 +202,29 @@ def voyage_distances(voyage_positions, transitions):
     distances_df = distances_df.drop('level_0', axis=1)
 
     return distances_df
+
+
+def voyage_direction(row, transition):
+    row.index = row.index.droplevel(1)
+    group1, group2 = transition
+    try:
+        x1, y1 = row.loc[group1].values
+        x2, y2 = row.loc[group2].values
+        dx = x2 - x1
+        dy = y2 - y1
+        if dx > 0 and dy > 0:
+            # bimodal
+            return r'$\nearrow$'
+        elif dx > 0 and dy <= 0:
+            # towards ~0
+            return r'$\searrow$'
+        elif dx <= 0 and dy > 0:
+            # towards ~1
+            return r'$\nwarrow$'
+        elif dx < 0 and dy < 0:
+            # Towards middle
+            return r'$\swarrow$'
+        else:
+            return np.nan
+    except KeyError:
+        return np.nan
