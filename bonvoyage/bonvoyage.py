@@ -127,12 +127,12 @@ DISTANCE_COLUMNS = ['group1', 'group2', 'voyage_distance', 'delta_x',
                     'delta_y', 'direction']
 
 
-def distances(voyage_positions, transitions):
+def distances(positions, transitions):
     """Get distance in NMF space of different splicing events
 
     Parameters
     ----------
-    voyage_positions : pandas.DataFrame
+    positions : pandas.DataFrame
         A ((group, features), 2) multiindexed dataframe with the groups labeled
         in the transitions as the first level on the rows, and the feature ids
         as the second level. Exactly the output from a
@@ -151,11 +151,11 @@ def distances(voyage_positions, transitions):
         distances of these events in NMF space
     """
 
-    # distances = voyage_positions.groupby(
+    # distances = positions.groupby(
     #     level=1, axis=0, as_index=True, group_keys=False).transform(
     #     single_voyage_distance, transitions=transitions)
 
-    grouped = voyage_positions.groupby(level=0, axis=0)
+    grouped = positions.groupby(level=0, axis=0)
     groups = {}
     for group in grouped.groups:
         df = grouped.get_group(group)
