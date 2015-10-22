@@ -123,7 +123,11 @@ class VoyageSpace(object):
         return binify(data, self.bins)
 
 
-def single_voyage_distance(positions, transitions):
+DISTANCE_COLUMNS = ['group1', 'group2', 'voyage_distance', 'delta_x',
+                    'delta_y', 'direction']
+
+
+def single_voyage_distance(positions, transition):
     """Get NMF distance of a single feature between phenotype transitions
 
     Parameters
@@ -132,7 +136,7 @@ def single_voyage_distance(positions, transitions):
         A ((n_features, phenotypes), 2) MultiIndex dataframe of the NMF
         positions of splicing events for different phenotypes
     transitions : list of 2-string tuples
-        List of (phenotype1, phenotype2) transitions
+        List of (group1, group2) transitions
 
     Returns
     -------
@@ -142,22 +146,19 @@ def single_voyage_distance(positions, transitions):
     """
     # positions_phenotype = positions.copy()
     # positions_phenotype.index = positions_phenotype.index.droplevel(1)
-    distances = pd.Series(index=transitions)
-    # lines = []
-    for transition in transitions:
-        try:
-            phenotype1, phenotype2 = transition
-            delta_x, delta_y = positions.loc[phenotype2] - positions.loc[phenotype1]
-            norm = np.linalg.norm([delta_x, delta_y])
-            # print phenotype1, phenotype2, norm
-            # line = list(transitions).append(norm)
-            # lines.append(line)
-            distances[transition] = norm
-            # distances
-        except KeyError:
-            pass
-    # distances = pd.DataFrame(lines, columns=['group1', 'group2',
-    #                                          'voyage_distance'])
+    # distances = pd.Series(index=transitions)
+    lines = []
+    # for transition in transitions:
+    try:
+        group1, group2 = transition
+        delta = positions.loc[group2] - positions.loc[group1]
+        delta_x, delta_y = delta.values[0]
+        norm = np.linalg.norm([delta_x, delta_y])
+        line = [group1, group2, norm, delta_x, delta_y]
+        lines.append(line)
+    except KeyError:
+        pass
+    distances = pd.Series(lines, index=DISTANCE_COLUMNS)
     return distances
 
 
@@ -185,46 +186,51 @@ def voyage_distances(voyage_positions, transitions):
         distances of these events in NMF space
     """
 
-    distances = voyage_positions.groupby(
-        level=1, axis=0, as_index=True, group_keys=False).apply(
-        single_voyage_distance, transitions=transitions)
+    # distances = voyage_positions.groupby(
+    #     level=1, axis=0, as_index=True, group_keys=False).transform(
+    #     single_voyage_distance, transitions=transitions)
 
-    # Remove any events that didn't have phenotype pairs from
-    # the transitions
-    distances = distances.dropna(how='all', axis=0)
+    grouped = voyage_positions.groupby(level=0, axis=0)
+    groups = {}
+    for group in grouped.groups:
+        df = grouped.get_group(group)
+        df.index = df.index.droplevel(0)
+        groups[group] = df
 
-    # Make this into a tidy dataframe
-    distances_df = distances.unstack().reset_index()
-    distances_df['group1'] = distances_df['level_0'].map(lambda x: x[0])
-    distances_df['group2'] = distances_df['level_0'].map(lambda x: x[1])
-    distances_df = distances_df.rename(
-        columns={'level_1': 'feature', 0: 'voyage_distance'})
-    distances_df = distances_df.drop('level_0', axis=1)
+    deltas = []
+    for group1, group2 in transitions:
+        df1 = groups[group1]
+        df2 = groups[group2]
+        delta = df2 - df1
+        # print delta.head()
+        delta['voyage_distance'] = np.linalg.norm(delta, axis=1)
+        delta = delta.reset_index()
+        delta['group1'] = group1
+        delta['group2'] = group2
+        deltas.append(delta)
 
-    return distances_df
+    distances = pd.concat(deltas, ignore_index=True)
+    distances = distances.rename(columns={0: 'delta_x', 1: 'delta_y',
+                                          'index': 'event_id'})
+    distances['direction'] = distances.apply(voyage_direction, axis=1)
+
+    return distances
 
 
-def voyage_direction(row, transition):
-    row.index = row.index.droplevel(1)
-    group1, group2 = transition
-    try:
-        x1, y1 = row.loc[group1].values
-        x2, y2 = row.loc[group2].values
-        dx = x2 - x1
-        dy = y2 - y1
-        if dx > 0 and dy > 0:
-            # bimodal
-            return r'$\nearrow$'
-        elif dx > 0 and dy <= 0:
-            # towards ~0
-            return r'$\searrow$'
-        elif dx <= 0 and dy > 0:
-            # towards ~1
-            return r'$\nwarrow$'
-        elif dx < 0 and dy < 0:
-            # Towards middle
-            return r'$\swarrow$'
-        else:
-            return np.nan
-    except KeyError:
+def voyage_direction(row):
+    dx = row['delta_x']
+    dy = row['delta_y']
+    if dx > 0 and dy > 0:
+        # Towards upper right --> bimodal
+        return r'$\nearrow$'
+    elif dx > 0 and dy <= 0:
+        # Towards lower right --> ~0
+        return r'$\searrow$'
+    elif dx <= 0 and dy > 0:
+        # Towards upper left --> ~1
+        return r'$\nwarrow$'
+    elif dx < 0 and dy < 0:
+        # Towards origin/lower left --> middle
+        return r'$\swarrow$'
+    else:
         return np.nan
