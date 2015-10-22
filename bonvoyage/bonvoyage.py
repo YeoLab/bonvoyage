@@ -167,6 +167,7 @@ def voyage_distances(voyage_positions, transitions):
         df1 = groups[group1]
         df2 = groups[group2]
         delta = df2 - df1
+        delta = delta.dropna()
         delta['voyage_distance'] = np.linalg.norm(delta, axis=1)
         delta = delta.reset_index()
         delta['group1'] = group1
