@@ -87,7 +87,7 @@ class VoyageSpace(object):
         data : pandas.DataFrame
             A (samples, features) array of data which are composed of
             fraction-based units (or scaled-down percent based units) which
-            range from 0 to 1
+            range from 0 to 1. Columns whose only value is NA wil be removed.
 
         Returns
         -------
@@ -107,7 +107,7 @@ class VoyageSpace(object):
         if (data < 0).any().any():
             raise ValueError("Some of the data is less than 0 - only values"
                              " between 0 and 1 are accepted")
-
+        data = data.dropna(how='all', axis=1)
         binned = self.binify(data).T
         transformed = self.nmf.transform(binned)
         transformed = pd.DataFrame(transformed, index=data.columns)
@@ -125,41 +125,6 @@ class VoyageSpace(object):
 
 DISTANCE_COLUMNS = ['group1', 'group2', 'voyage_distance', 'delta_x',
                     'delta_y', 'direction']
-
-
-def single_voyage_distance(positions, transition):
-    """Get NMF distance of a single feature between phenotype transitions
-
-    Parameters
-    ----------
-    positions : pandas.DataFrame
-        A ((n_features, phenotypes), 2) MultiIndex dataframe of the NMF
-        positions of splicing events for different phenotypes
-    transitions : list of 2-string tuples
-        List of (group1, group2) transitions
-
-    Returns
-    -------
-    transitions : pandas.DataFrame
-        A (n_features, n_transitions) DataFrame of the NMF distances
-        of features between different phenotypes
-    """
-    # positions_phenotype = positions.copy()
-    # positions_phenotype.index = positions_phenotype.index.droplevel(1)
-    # distances = pd.Series(index=transitions)
-    lines = []
-    # for transition in transitions:
-    try:
-        group1, group2 = transition
-        delta = positions.loc[group2] - positions.loc[group1]
-        delta_x, delta_y = delta.values[0]
-        norm = np.linalg.norm([delta_x, delta_y])
-        line = [group1, group2, norm, delta_x, delta_y]
-        lines.append(line)
-    except KeyError:
-        pass
-    distances = pd.Series(lines, index=DISTANCE_COLUMNS)
-    return distances
 
 
 def voyage_distances(voyage_positions, transitions):
@@ -202,7 +167,6 @@ def voyage_distances(voyage_positions, transitions):
         df1 = groups[group1]
         df2 = groups[group2]
         delta = df2 - df1
-        # print delta.head()
         delta['voyage_distance'] = np.linalg.norm(delta, axis=1)
         delta = delta.reset_index()
         delta['group1'] = group1
