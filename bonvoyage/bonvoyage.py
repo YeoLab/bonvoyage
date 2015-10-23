@@ -3,54 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import NMF
 
-from modish import ModalityEstimator
-
-def bin_range_strings(bins):
-    """Given a list of bins, make a list of strings of those bin ranges
-
-    Parameters
-    ----------
-    bins : list_like
-        List of anything, usually values of bin edges
-
-    Returns
-    -------
-    bin_ranges : list
-        List of bin ranges
-
-    >>> bin_range_strings((0, 0.5, 1))
-    ['0-0.5', '0.5-1']
-    """
-    return ['{}-{}'.format(i, j) for i, j in zip(bins, bins[1:])]
-
-
-def binify(data, bins):
-    """Makes a histogram of each column the provided binsize
-
-    Parameters
-    ----------
-    data : pandas.DataFrame
-        A samples x features dataframe. Each feature (column) will be binned
-        into the provided bins
-    bins : iterable
-        Bins you would like to use for this data. Must include the final bin
-        value, e.g. (0, 0.5, 1) for the two bins (0, 0.5) and (0.5, 1).
-        nbins = len(bins) - 1
-
-    Returns
-    -------
-    binned : pandas.DataFrame
-        An nbins x features DataFrame of each column binned across rows
-    """
-    if bins is None:
-        raise ValueError('"bins" cannot be None')
-    binned = data.apply(lambda x: pd.Series(np.histogram(x, bins=bins)[0]))
-    binned.index = bin_range_strings(bins)
-
-    # Normalize so each column sums to 1
-    binned = binned / binned.sum().astype(float)
-    return binned
-
+from .infotheory import binify
 
 class VoyageSpace(object):
 
@@ -76,7 +29,7 @@ class VoyageSpace(object):
         self.nmf.fit(self.seed_data)
 
     def transform(self, data):
-        """Project the fraction-based data into voyage space using NMF
+        """Project the fraction-based data into waypoints space using NMF
 
         Use non-negative matrix factorization (NMF) to transform fraction-based
         data (ranging from 0 to 1) into a two-dimensional space for
@@ -91,7 +44,7 @@ class VoyageSpace(object):
 
         Returns
         -------
-        transformed : pandas.DataFrame
+        waypoints : pandas.DataFrame
             A (features, 2) array of the data transformed by NMF, and scaled
             such that the maximum x- and y-values are 1.
 
@@ -146,7 +99,7 @@ def distances(positions, transitions):
         least 60% of samples must have an event detected for voyage space
     Returns
     -------
-    nmf_space_transitions : pandas.DataFrame
+    voyages : pandas.DataFrame
         A (n_events, n_phenotype_transitions) sized DataFrame of the
         distances of these events in NMF space
     """
