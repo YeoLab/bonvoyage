@@ -175,7 +175,8 @@ def distances(positions, transitions):
         deltas.append(delta)
 
     distances = pd.concat(deltas, ignore_index=True)
-    distances = distances.rename(columns={0: 'delta_x', 1: 'delta_y',
+    distances = distances.rename(columns={0: '$\Delta x$',
+                                          1: '$\Delta y$',
                                           'index': 'event_id'})
     distances['direction'] = distances.apply(direction, axis=1)
     distances['transition'] = distances['group1'] + '-' + distances['group2']
@@ -184,8 +185,8 @@ def distances(positions, transitions):
 
 
 def direction(row):
-    dx = row['delta_x']
-    dy = row['delta_y']
+    dx = row['$\Delta x$']
+    dy = row['$\Delta y$']
     if dx > 0 and dy > 0:
         # Towards upper right --> bimodal
         return r'$\nearrow$'
