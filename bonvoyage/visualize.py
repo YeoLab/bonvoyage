@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from modish import MODALITY_TO_COLOR, MODALITY_TO_CMAP
+
 def switchy_score(array):
     """Transform a 1D array of data scores to a vector of "switchy scores"
 
@@ -65,15 +67,87 @@ def arrowplot(*args, **kwargs):
                  alpha=0.25, **kwargs)
 
 def hexbin(x, y, *args, **kwargs):
-    """Wrapper around hexbin to create a colormap from provided color
+    """Wrapper around hexbin to create a colormap for that modality
 
     Created for compatibility with seaborn FacetGrid
     """
     ax = kwargs['ax'] if 'ax' in kwargs else plt.gca()
-    color = kwargs.pop('color', 'k')
-    cmap = sns.light_palette(color, as_cmap=True)
+    modality = kwargs.pop('modality', 'multimodal')
+    cmap = MODALITY_TO_CMAP[modality]
 
     ax.hexbin(x, y, cmap=cmap, *args, **kwargs)
+
+
+def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
+                      color='#262626', markeredgewidth=0.5,
+                      markeredgecolor='darkgrey', **kwargs):
+    x = waypoints.iloc[:, 0]
+    y = waypoints.iloc[:, 1]
+
+    if ax is None:
+        ax = plt.gca()
+
+    if modality is not None:
+        color = MODALITY_TO_COLOR[modality]
+
+    return ax.plot(x, y, 'o', color=color,
+                   alpha=alpha, markeredgewidth=markeredgewidth,
+                   markeredgecolor=markeredgecolor, **kwargs)
+
+def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
+                    gridsize=20, mincnt=1, bins='log', cmap='Greys', **kwargs):
+    x = waypoints.iloc[:, 0]
+    y = waypoints.iloc[:, 1]
+
+    if ax is None:
+        ax = plt.gca()
+
+    if modality is not None:
+        cmap = MODALITY_TO_CMAP[modality]
+
+    return ax.hexbin(x, y, cmap=cmap, edgecolor=edgecolor, gridsize=gridsize,
+                     mincnt=mincnt, bins=bins, **kwargs)
+
+
+def _waypoint_kde(waypoints, modality=None, ax=None, cmap='Greys',
+                  shade_lowest=False, n_levels=5, **kwargs):
+    x = waypoints.iloc[:, 0]
+    y = waypoints.iloc[:, 1]
+
+    if ax is None:
+        ax = plt.gca()
+
+    if modality is not None:
+        cmap = MODALITY_TO_CMAP[modality]
+
+    return sns.kdeplot(x, y, cmap=cmap, shade_lowest=shade_lowest,
+                       n_levels=n_levels, ax=ax, **kwargs)
+
+
+def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
+                 **kwargs):
+    if ax is None:
+        ax = plt.gca()
+
+    if kind.startswith('scatter'):
+        plotter = _waypoint_scatter
+    if kind.startswith('hex'):
+        plotter = _waypoint_hexbin
+    if kind.startswith('kde'):
+        plotter = _waypoint_kde
+
+    if features_groupby is None:
+        plotter(waypoints, ax=ax, **kwargs)
+    else:
+        for modality, modality_waypoints in waypoints.groupby(features_groupby):
+            plotter(modality_waypoints, modality, ax=ax, **kwargs)
+
+    sns.despine()
+    ax.set(xlabel='~0', ylabel='~1',
+           xticks=[], yticks=[], ylim=(0, 1.01),
+           xlim=(0, 1.01))
+    return ax
+
 
 def voyageplot(nmf_space_positions, feature_id, phenotype_to_color,
                phenotype_to_marker, order, ax=None, xlabel=None, ylabel=None):
