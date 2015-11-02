@@ -5,7 +5,7 @@ from sklearn.decomposition import NMF
 
 from .infotheory import binify
 
-class WaypointSpace(object):
+class Waypoints(object):
 
     n_components = 2
     binsize = 0.1

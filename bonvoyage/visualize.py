@@ -95,7 +95,8 @@ def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
                    markeredgecolor=markeredgecolor, **kwargs)
 
 def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
-                    gridsize=20, mincnt=1, bins='log', cmap='Greys', **kwargs):
+                    gridsize=20, mincnt=1, bins='log', cmap='Greys',
+                     extent=(0, 1, 0, 1), **kwargs):
     x = waypoints.iloc[:, 0]
     y = waypoints.iloc[:, 1]
 
@@ -106,7 +107,7 @@ def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
         cmap = MODALITY_TO_CMAP[modality]
 
     return ax.hexbin(x, y, cmap=cmap, edgecolor=edgecolor, gridsize=gridsize,
-                     mincnt=mincnt, bins=bins, **kwargs)
+                     mincnt=mincnt, bins=bins, extent=extent, **kwargs)
 
 
 def _waypoint_kde(waypoints, modality=None, ax=None, cmap='Greys',

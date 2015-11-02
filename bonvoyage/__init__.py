@@ -5,7 +5,10 @@ __email__ = 'olga.botvinnik@gmail.com'
 __version__ = '0.1.0'
 
 
-from .waypoints import WaypointSpace, voyages, direction
+from .infotheory import binify
+from .voyages import Voyages
 from .visualize import waypointplot
+from .waypoints import Waypoints
 
-__all__ = ['WaypointSpace', 'voyages', 'direction', 'waypointplot']
+__all__ = ['Waypoints', 'voyages', 'direction', 'waypointplot',
+           'binify']
