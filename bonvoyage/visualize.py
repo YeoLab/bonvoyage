@@ -95,7 +95,7 @@ def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
                    markeredgecolor=markeredgecolor, **kwargs)
 
 def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
-                    gridsize=20, mincnt=1, bins='log', cmap='Greys',
+                     gridsize=20, mincnt=1, bins='log', cmap='Greys',
                      extent=(0, 1, 0, 1), **kwargs):
     x = waypoints.iloc[:, 0]
     y = waypoints.iloc[:, 1]
@@ -143,10 +143,12 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
         for modality, modality_waypoints in waypoints.groupby(features_groupby):
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
+    vlim = -0.05, 1.05
+
     sns.despine()
     ax.set(xlabel='~0', ylabel='~1',
-           xticks=[], yticks=[], ylim=(0, 1.01),
-           xlim=(0, 1.01))
+           xticks=[], yticks=[], ylim=vlim,
+           xlim=vlim)
     return ax
 
 
