@@ -5,7 +5,7 @@ from sklearn.decomposition import NMF
 
 from .infotheory import binify
 
-class VoyageSpace(object):
+class WaypointSpace(object):
 
     n_components = 2
     binsize = 0.1
@@ -88,7 +88,7 @@ def voyages(positions, transitions):
     positions : pandas.DataFrame
         A ((group, features), 2) multiindexed dataframe with the groups labeled
         in the transitions as the first level on the rows, and the feature ids
-        as the second level. Exactly the output from VoyageSpace.transform().
+        as the second level. Exactly the output from WaypointSpace.transform().
     transitions : list of str pairs
         Which phenotype follows from one to the next, for calculating
         voyages between features

@@ -10,7 +10,7 @@ Tests for `bonvoyage` module.
 
 import unittest
 
-from bonvoyage import bonvoyage
+from bonvoyage import waypoints
 
 
 class TestBonvoyage(unittest.TestCase):
