@@ -80,18 +80,18 @@ DISTANCE_COLUMNS = ['group1', 'group2', 'voyage_distance', 'delta_x',
                     'delta_y', 'direction']
 
 
-def distances(positions, transitions):
-    """Get distance in NMF space of different splicing events
+def voyages(positions, transitions):
+    """Find magnitude and direction of waypoints between transitions
 
     Parameters
     ----------
     positions : pandas.DataFrame
         A ((group, features), 2) multiindexed dataframe with the groups labeled
         in the transitions as the first level on the rows, and the feature ids
-        as the second level. Exactly the output from a
+        as the second level. Exactly the output from VoyageSpace.transform().
     transitions : list of str pairs
         Which phenotype follows from one to the next, for calculating
-        distances between features
+        voyages between features
     n : int or float
         If int, then this is the absolute number of cells that are minimum
         required to calculate. If a float, then require this
@@ -101,13 +101,8 @@ def distances(positions, transitions):
     -------
     voyages : pandas.DataFrame
         A (n_events, n_phenotype_transitions) sized DataFrame of the
-        distances of these events in NMF space
+        voyages of these events in NMF space
     """
-
-    # distances = positions.groupby(
-    #     level=1, axis=0, as_index=True, group_keys=False).transform(
-    #     single_voyage_distance, transitions=transitions)
-
     grouped = positions.groupby(level=0, axis=0)
     groups = {}
     for group in grouped.groups:
@@ -121,7 +116,7 @@ def distances(positions, transitions):
         df2 = groups[group2]
         delta = df2 - df1
         delta = delta.dropna()
-        delta['voyage_distance'] = np.linalg.norm(delta, axis=1)
+        delta['magnitude'] = np.linalg.norm(delta, axis=1)
         delta = delta.reset_index()
         delta['group1'] = group1
         delta['group2'] = group2
@@ -138,9 +133,43 @@ def distances(positions, transitions):
 
 
 def direction(row):
+    """Assign orientation of change based on delta x and delta y
+
+    Parameters
+    ----------
+    row : pandas.Series
+        A row with items "$\Delta x$" and "$\Delta y$"
+
+    Returns
+    -------
+    orientation : str
+        The direction of change, as a LaTeX arrow, e.g. r'$\nearrow$' (north
+        east arrow) for bimodal
+
+    >>> # Towards upper right --> bimodal
+    >>> direction(pd.Series({'$\Delta x$': 0.4, '$\Delta y$': 0.1}))
+    r'$\nearrow$'
+    >>> # Towards lower right --> ~0
+    >>> direction(pd.Series({'$\Delta x$': 0.4, '$\Delta y$': -0.1}))
+    r'$\searrow'
+    >>> # Towards upper left --> ~1
+    >>> direction(pd.Series({'$\Delta x$': -0.4, '$\Delta y$': 0.1}))
+    r'$\nwarrow$'
+    >>> # Towards origin/lower left --> middle
+    >>> direction(pd.Series({'$\Delta x$': -0.4, '$\Delta y$': -0.1}))
+    r'$\swarrow$'
+    >>> # No movement --> Not a number
+    >>> direction(pd.Series({'$\Delta x$': 0, '$\Delta y$': 0}))
+    np.nan
+
+    """
     dx = row['$\Delta x$']
     dy = row['$\Delta y$']
-    if dx > 0 and dy > 0:
+
+    if dx == 0 and dy == 0:
+        # No movement --> Not a number
+        return np.nan
+    elif dx > 0 and dy > 0:
         # Towards upper right --> bimodal
         return r'$\nearrow$'
     elif dx > 0 and dy <= 0:
