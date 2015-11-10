@@ -26,7 +26,7 @@ class Waypoints(object):
     
     def __init__(self):
         self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
-        self.nmf.fit(self.seed_data)
+        self.seed_data_transformed = self.nmf.fit_transform(self.seed_data)
 
     def transform(self, data):
         """Project the fraction-based data into waypoints space using NMF
@@ -68,7 +68,7 @@ class Waypoints(object):
         # Normalize data so maximum for x and y axis is always 1. Since
         # transformed data is non-negative, don't need to subtract the minimum,
         # since the minimum >= 0.
-        # transformed = transformed/transformed.max()
+        transformed = transformed/self.seed_data_transformed.max()
 
         return transformed
 
