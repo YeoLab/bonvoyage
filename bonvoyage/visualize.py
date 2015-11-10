@@ -130,10 +130,13 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
     if ax is None:
         ax = plt.gca()
 
+    xmax, ymax = waypoints.max()
+
     if kind.startswith('scatter'):
         plotter = _waypoint_scatter
     if kind.startswith('hex'):
         plotter = _waypoint_hexbin
+        kwargs['extent'] = (0, xmax, 0, ymax)
     if kind.startswith('kde'):
         plotter = _waypoint_kde
 
@@ -143,12 +146,11 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
         for modality, modality_waypoints in waypoints.groupby(features_groupby):
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
-    vlim = 0, 1.05
 
     sns.despine()
     ax.set(xlabel='~0', ylabel='~1',
-           xticks=[], yticks=[], ylim=vlim,
-           xlim=vlim)
+           xticks=[], yticks=[], ylim=(0, ymax),
+           xlim=(0, xmax))
     return ax
 
 

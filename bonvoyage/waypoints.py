@@ -68,7 +68,7 @@ class Waypoints(object):
         # Normalize data so maximum for x and y axis is always 1. Since
         # transformed data is non-negative, don't need to subtract the minimum,
         # since the minimum >= 0.
-        transformed = transformed/transformed.max()
+        # transformed = transformed/transformed.max()
 
         return transformed
 
