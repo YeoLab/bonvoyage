@@ -28,7 +28,18 @@ class Waypoints(object):
         self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
         self.seed_data_transformed = self.nmf.fit_transform(self.seed_data)
 
-    def transform(self, data):
+    def fit(self, data):
+        if (data > 1).any().any():
+            raise ValueError("Some of the data is greater than 1 - only values"
+                             " between 0 and 1 are accepted")
+        if (data < 0).any().any():
+            raise ValueError("Some of the data is less than 0 - only values"
+                             " between 0 and 1 are accepted")
+        data = data.dropna(how='all', axis=1)
+        binned = self.binify(data).T
+        return binned
+
+    def transform(self, binned):
         """Project the fraction-based data into waypoints space using NMF
 
         Use non-negative matrix factorization (NMF) to transform fraction-based
@@ -54,16 +65,8 @@ class Waypoints(object):
             If the data contains any values that are greater than 1 or less
             than 0.
         """
-        if (data > 1).any().any():
-            raise ValueError("Some of the data is greater than 1 - only values"
-                             " between 0 and 1 are accepted")
-        if (data < 0).any().any():
-            raise ValueError("Some of the data is less than 0 - only values"
-                             " between 0 and 1 are accepted")
-        data = data.dropna(how='all', axis=1)
-        binned = self.binify(data).T
         transformed = self.nmf.transform(binned)
-        transformed = pd.DataFrame(transformed, index=data.columns)
+        transformed = pd.DataFrame(transformed, index=binned.columns)
 
         # Normalize data so maximum for x and y axis is always 1. Since
         # transformed data is non-negative, don't need to subtract the minimum,
@@ -71,6 +74,9 @@ class Waypoints(object):
         transformed = transformed/self.seed_data_transformed.max()
 
         return transformed
+
+    def fit_transform(self, data):
+        return self.transform(self.fit(data))
 
     def binify(self, data):
         return binify(data, self.bins)
