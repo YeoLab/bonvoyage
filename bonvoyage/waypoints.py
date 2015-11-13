@@ -80,7 +80,7 @@ class Waypoints(object):
 
         """
         transformed = self.nmf.transform(binned)
-        transformed = pd.DataFrame(transformed, index=binned.columns)
+        transformed = pd.DataFrame(transformed, index=binned.index)
 
         # Normalize data so maximum for x and y axis is always 1. Since
         # transformed data is non-negative, don't need to subtract the minimum,
