@@ -29,6 +29,26 @@ class Waypoints(object):
         self.seed_data_transformed = self.nmf.fit_transform(self.seed_data)
 
     def fit(self, data):
+        """Discretize the data in preparation for transformation to waypoints
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            A (samples, features) array of data which are composed of
+            fraction-based units (or scaled-down percent based units) which
+            range from 0 to 1. Columns whose only value is NA wil be removed.
+
+        Returns
+        -------
+        binned : pandas.DataFrame
+            A (features, 10) array of the discretized data
+
+        Raises
+        ------
+        ValueError
+            If the data contains any values that are greater than 1 or less
+            than 0.
+        """
         if (data > 1).any().any():
             raise ValueError("Some of the data is greater than 1 - only values"
                              " between 0 and 1 are accepted")
@@ -48,22 +68,16 @@ class Waypoints(object):
 
         Parameters
         ----------
-        data : pandas.DataFrame
-            A (samples, features) array of data which are composed of
-            fraction-based units (or scaled-down percent based units) which
-            range from 0 to 1. Columns whose only value is NA wil be removed.
+        binned : pandas.DataFrame
+            A (features, 10) array of data binned into bins of size 0.1:
+            (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
 
         Returns
         -------
         waypoints : pandas.DataFrame
-            A (features, 2) array of the data transformed by NMF, and scaled
-            such that the maximum x- and y-values are 1.
+            A (features, 2) array of the binned data transformed by NMF, and
+            scaled such that the maximum x- and y-values are 1.
 
-        Raises
-        ------
-        ValueError
-            If the data contains any values that are greater than 1 or less
-            than 0.
         """
         transformed = self.nmf.transform(binned)
         transformed = pd.DataFrame(transformed, index=binned.columns)
@@ -76,6 +90,27 @@ class Waypoints(object):
         return transformed
 
     def fit_transform(self, data):
+        """A one-step to discretize data and transform to waypoints
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            A (samples, features) array of data which are composed of
+            fraction-based units (or scaled-down percent based units) which
+            range from 0 to 1. Columns whose only value is NA wil be removed.
+
+        Returns
+        -------
+        waypoints : pandas.DataFrame
+            A (features, 2) array of the binned data transformed by NMF, and
+            scaled such that the maximum x- and y-values are 1.
+
+        Raises
+        ------
+        ValueError
+            If the data contains any values that are greater than 1 or less
+            than 0.
+        """
         return self.transform(self.fit(data))
 
     def binify(self, data):
