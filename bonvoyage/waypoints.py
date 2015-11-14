@@ -49,14 +49,20 @@ class Waypoints(object):
             If the data contains any values that are greater than 1 or less
             than 0.
         """
-        if (data > 1).any().any():
+        if sum((data > 1).any()):
             raise ValueError("Some of the data is greater than 1 - only values"
                              " between 0 and 1 are accepted")
-        if (data < 0).any().any():
+        if sum((data < 0).any()):
             raise ValueError("Some of the data is less than 0 - only values"
                              " between 0 and 1 are accepted")
-        data = data.dropna(how='all', axis=1)
-        binned = self.binify(data).T
+        if isinstance(data, pd.DataFrame):
+            data = data.dropna(how='all', axis=1)
+            binned = self.binify(data).T
+        elif isinstance(data, pd.Series):
+            binned = self.binify(data)
+        else:
+            raise ValueError('Only pandas DataFrames and Series are accepted')
+
         return binned
 
     def transform(self, binned):
@@ -68,9 +74,9 @@ class Waypoints(object):
 
         Parameters
         ----------
-        binned : pandas.DataFrame
-            A (features, 10) array of data binned into bins of size 0.1:
-            (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+        binned : pandas.DataFrame | pandas.Series
+            A (features, 10) array of data, or (10,) series binned into bins
+            of size 0.1: (0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
 
         Returns
         -------
@@ -79,13 +85,20 @@ class Waypoints(object):
             scaled such that the maximum x- and y-values are 1.
 
         """
-        transformed = self.nmf.transform(binned)
-        transformed = pd.DataFrame(transformed, index=binned.index)
+        if isinstance(binned, pd.DataFrame):
+            transformed = self.nmf.transform(binned)
+            transformed = pd.DataFrame(transformed, index=binned.index)
+
+        elif isinstance(binned, pd.Series):
+            transformed = self.nmf.transform(binned.to_frame())
+            transformed = pd.Series(transformed, name=binned.name)
+        else:
+            raise ValueError('Only pandas DataFrames and Series are accepted')
 
         # Normalize data so maximum for x and y axis is always 1. Since
         # transformed data is non-negative, don't need to subtract the minimum,
         # since the minimum >= 0.
-        transformed = transformed/self.seed_data_transformed.max()
+        transformed = transformed / self.seed_data_transformed.max()
 
         return transformed
 
