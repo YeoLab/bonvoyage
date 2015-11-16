@@ -49,16 +49,28 @@ class Waypoints(object):
             If the data contains any values that are greater than 1 or less
             than 0.
         """
-        if sum((data > 1).any()):
-            raise ValueError("Some of the data is greater than 1 - only values"
-                             " between 0 and 1 are accepted")
-        if sum((data < 0).any()):
-            raise ValueError("Some of the data is less than 0 - only values"
-                             " between 0 and 1 are accepted")
         if isinstance(data, pd.DataFrame):
+            if (data > 1).any().any():
+                raise ValueError(
+                    "Some of the data is greater than 1 - only values"
+                    " between 0 and 1 are accepted")
+            if (data < 0).any().any():
+                raise ValueError(
+                    "Some of the data is less than 0 - only values"
+                    " between 0 and 1 are accepted")
+
             data = data.dropna(how='all', axis=1)
             binned = self.binify(data).T
         elif isinstance(data, pd.Series):
+            if (data > 1).any():
+                raise ValueError(
+                    "Some of the data is greater than 1 - only values"
+                    " between 0 and 1 are accepted")
+            if (data < 0).any():
+                raise ValueError(
+                    "Some of the data is less than 0 - only values"
+                    " between 0 and 1 are accepted")
+
             binned = self.binify(data)
         else:
             raise ValueError('Only pandas DataFrames and Series are accepted')
