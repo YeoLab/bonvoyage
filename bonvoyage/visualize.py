@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from modish import MODALITY_TO_COLOR, MODALITY_TO_CMAP
+from anchor import MODALITY_TO_COLOR, MODALITY_TO_CMAP
 
 def switchy_score(array):
     """Transform a 1D array of data scores to a vector of "switchy scores"

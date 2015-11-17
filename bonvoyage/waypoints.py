@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.decomposition import NMF
 
-from modish.infotheory import binify
+from anchor.infotheory import binify
 
 class Waypoints(object):
 
