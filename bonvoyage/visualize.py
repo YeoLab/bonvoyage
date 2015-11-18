@@ -111,7 +111,8 @@ def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
 
 
 def _waypoint_kde(waypoints, modality=None, ax=None, cmap='Greys',
-                  shade_lowest=False, n_levels=5, **kwargs):
+                  shade_lowest=False, **kwargs):
+    kwargs.setdefault('n_levels', min(int(waypoints.shape[0]/5.), 5))
     x = waypoints.iloc[:, 0]
     y = waypoints.iloc[:, 1]
 
@@ -121,8 +122,11 @@ def _waypoint_kde(waypoints, modality=None, ax=None, cmap='Greys',
     if modality is not None:
         cmap = MODALITY_TO_CMAP[modality]
 
-    return sns.kdeplot(x, y, cmap=cmap, shade_lowest=shade_lowest,
-                       n_levels=n_levels, ax=ax, **kwargs)
+    try:
+        return sns.kdeplot(x, y, cmap=cmap, shade_lowest=shade_lowest, ax=ax,
+                           **kwargs)
+    except ValueError:
+        return
 
 
 def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
