@@ -102,7 +102,7 @@ class Waypoints(object):
             transformed = pd.DataFrame(transformed, index=binned.index)
 
         elif isinstance(binned, pd.Series):
-            transformed = self.nmf.transform(binned.to_frame())
+            transformed = self.nmf.transform(binned.to_frame().T)[0]
             transformed = pd.Series(transformed, name=binned.name)
         else:
             raise ValueError('Only pandas DataFrames and Series are accepted')
