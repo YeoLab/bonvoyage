@@ -23,23 +23,23 @@ test_requirements = [
 ]
 
 setup(
-    name='astrolabe',
+    name='bonvoyage',
     version='0.1.0',
     description="Transform percentage-based units into a 2d space to evaluate changes in distribution with both magnitude and direction.",
     long_description=readme + '\n\n' + history,
     author="Olga Botvinnik",
     author_email='olga.botvinnik@gmail.com',
-    url='https://github.com/olgabot/astrolabe',
+    url='https://github.com/olgabot/bonvoyage',
     packages=[
-        'astrolabe',
+        'bonvoyage',
     ],
-    package_dir={'astrolabe':
-                 'astrolabe'},
+    package_dir={'bonvoyage':
+                 'bonvoyage'},
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
-    keywords='astrolabe',
+    keywords='bonvoyage',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

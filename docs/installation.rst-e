@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ easy_install astrolabe
+    $ easy_install bonvoyage
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv astrolabe
-    $ pip install astrolabe
+    $ mkvirtualenv bonvoyage
+    $ pip install bonvoyage
