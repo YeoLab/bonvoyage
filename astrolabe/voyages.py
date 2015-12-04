@@ -5,6 +5,10 @@ import pandas as pd
 VOYAGE_COLUMNS = ['group1', 'group2', 'magnitude', '$\Delta x$',
                   '$\Delta y$ ', 'direction']
 
+def strip_direction(direction):
+    """Remove non-filename friendly characters from LaTeX format of direction"""
+    return direction.strip('$\\')
+
 class Voyages(object):
 
     def voyages(self, positions, transitions):
