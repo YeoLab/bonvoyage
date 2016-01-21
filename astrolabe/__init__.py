@@ -8,4 +8,4 @@ from .voyages import Voyages
 from .visualize import waypointplot
 from .waypoints import Waypoints
 
-__all__ = ['Waypoints', 'voyages', 'direction', 'waypointplot']
+__all__ = ['Waypoints', 'Voyages', 'direction', 'waypointplot']

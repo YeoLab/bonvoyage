@@ -8,12 +8,12 @@ VOYAGE_COLUMNS = ['group1', 'group2', 'magnitude', '$\Delta x$',
 
 class Voyages(object):
 
-    def voyages(self, positions, transitions):
+    def voyages(self, waypoints, transitions):
         """Find magnitude and direction of waypoints between transitions
 
         Parameters
         ----------
-        positions : pandas.DataFrame
+        waypoints : pandas.DataFrame
             A ((group, features), 2) multiindexed dataframe with the groups labeled
             in the transitions as the first level on the rows, and the feature ids
             as the second level. Exactly the output from Waypoints.transform().
@@ -31,7 +31,7 @@ class Voyages(object):
             A (n_events, n_phenotype_transitions) sized DataFrame of the
             voyages of these events in NMF space
         """
-        grouped = positions.groupby(level=0, axis=0)
+        grouped = waypoints.groupby(level=0, axis=0)
         groups = {}
         for group in grouped.groups:
             df = grouped.get_group(group)
