@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from anchor import MODALITY_TO_COLOR, MODALITY_TO_CMAP
+from anchor import MODALITY_TO_COLOR, MODALITY_TO_CMAP, NULL_MODEL
 
 def switchy_score(array):
     """Transform a 1D array of data scores to a vector of "switchy scores"
@@ -72,7 +72,7 @@ def hexbin(x, y, *args, **kwargs):
     Created for compatibility with seaborn FacetGrid
     """
     ax = kwargs['ax'] if 'ax' in kwargs else plt.gca()
-    modality = kwargs.pop('modality', 'multimodal')
+    modality = kwargs.pop('modality', NULL_MODEL)
     cmap = MODALITY_TO_CMAP[modality]
 
     ax.hexbin(x, y, cmap=cmap, *args, **kwargs)
