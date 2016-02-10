@@ -2,7 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from anchor import MODALITY_TO_COLOR, MODALITY_TO_CMAP, NULL_MODEL
+from anchor import MODALITY_TO_COLOR, MODALITY_TO_CMAP, NULL_MODEL, \
+    NEAR_ZERO, NEAR_ONE
+
 
 def switchy_score(array):
     """Transform a 1D array of data scores to a vector of "switchy scores"
@@ -152,14 +154,15 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
 
 
     sns.despine(offset=3)
-    ax.set(xlabel='~0', ylabel='~1',
+    ax.set(xlabel=NEAR_ZERO, ylabel=NEAR_ONE,
            xticks=[], yticks=[], ylim=(0, 1.05),
            xlim=(0, 1.05))
     return ax
 
 
 def voyageplot(nmf_space_positions, feature_id, phenotype_to_color,
-               phenotype_to_marker, order, ax=None, xlabel=None, ylabel=None):
+               phenotype_to_marker, order, ax=None, xlabel=NEAR_ZERO,
+               ylabel=NEAR_ONE):
     """Plot 2d space traveled by individual splicing events
 
     Parameters
