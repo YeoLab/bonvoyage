@@ -23,10 +23,11 @@ class Waypoints(object):
         # Use two near0_binned to ensure the x-axis is near-0, i.e. that 0th
         # axis is near-0
         [near0_binned, near0_binned, near1_binned])
-    
+
     def __init__(self):
         self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
-        self.seed_data_transformed = self.nmf.fit_transform(self.seed_data)
+        self.seed_data_transformed = pd.DataFrame(
+            self.nmf.fit_transform(self.seed_data))
 
     def fit(self, data):
         """Discretize the data in preparation for transformation to waypoints
