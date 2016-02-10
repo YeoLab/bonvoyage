@@ -151,10 +151,10 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
 
-    sns.despine()
+    sns.despine(offset=3)
     ax.set(xlabel='~0', ylabel='~1',
-           xticks=[], yticks=[], ylim=(0, 1),
-           xlim=(0, 1))
+           xticks=[], yticks=[], ylim=(0, 1.05),
+           xlim=(0, 1.05))
     return ax
 
 
