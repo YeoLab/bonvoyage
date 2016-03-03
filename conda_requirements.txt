@@ -1,3 +1,7 @@
 numpy
 scikit-learn
 pandas
+seaborn
+matplotlib
+patsy
+statsmodels
