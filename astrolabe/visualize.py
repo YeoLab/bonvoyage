@@ -50,7 +50,7 @@ def get_switchy_score_order(x):
 
 def arrowplot(*args, **kwargs):
     data = kwargs.pop('data')
-    voyage_space_positions = kwargs.pop('voyage_space_positions')
+    waypoints = kwargs.pop('waypoints')
     ax = plt.gca()
     phenotype1, phenotype2 = data.transition.values[0].split('-')
     print phenotype1, phenotype2
@@ -58,11 +58,11 @@ def arrowplot(*args, **kwargs):
     # PLot a phantom line for the legend to work
     ax.plot(0, 0, **kwargs)
     for event in data.event_name:
-        df = voyage_space_positions.ix[event].ix[[phenotype1, phenotype2]].dropna()
+        df = waypoints.ix[event].ix[[phenotype1, phenotype2]].dropna()
         if df.shape[0] != 2:
             continue
-        x1, x2 = df.pc_1.values
-        y1, y2 = df.pc_2.values
+        x1, x2 = df.iloc[:, 0].values
+        y1, y2 = df.iloc[:, 1].values
         dx = x2 - x1
         dy = y2 - y1
         ax.arrow(x1, y1, dx, dy, head_width=0.005, head_length=0.005, #fc='k', ec='k',
