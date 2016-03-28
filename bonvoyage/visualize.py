@@ -53,7 +53,6 @@ def arrowplot(*args, **kwargs):
     waypoints = kwargs.pop('waypoints')
     ax = plt.gca()
     phenotype1, phenotype2 = data.transition.values[0].split('-')
-    print phenotype1, phenotype2
 
     # PLot a phantom line for the legend to work
     ax.plot(0, 0, **kwargs)
