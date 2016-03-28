@@ -1,6 +1,6 @@
 .. _tutorial:
 
-astrolabe Tutorial
+bonvoyage Tutorial
 =================
 
 Installation

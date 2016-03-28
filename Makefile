@@ -7,7 +7,7 @@ test:
 	py.test
 
 coverage:
-	coverage run --source astrolabe --omit=tests --module py.test
+	coverage run --source bonvoyage --omit=tests --module py.test
 
 lint:
-	flake8 astrolabe
+	flake8 bonvoyage
