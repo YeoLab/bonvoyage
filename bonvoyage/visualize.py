@@ -159,21 +159,21 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
     return ax
 
 
-def voyageplot(nmf_space_positions, feature_id, phenotype_to_color,
-               phenotype_to_marker, order, ax=None, xlabel=NEAR_ZERO,
-               ylabel=NEAR_ONE):
+def voyageplot(waypoints, feature_id, hue,
+               marker, order, ax=None, xlabel=NEAR_ZERO,
+               ylabel=NEAR_ONE, markersize=14, alpha=0.75, linestyle='none'):
     """Plot 2d space traveled by individual splicing events
 
     Parameters
     ----------
-    nmf_space_positions : pandas.DataFrame
+    waypoints : pandas.DataFrame
         A dataframe with a multiindex of (event, phenotype) and columns of
         x- and y- position, respectively
     feature_id : str
         Unique identifier of the feature to plot
-    phenotype_to_color : dict
+    hue : dict or pandas.Series
         Mapping of the phenotype name to a color
-    phenotype_to_marker : dict
+    marker : dict or pandas.Series
         Mapping of the phenotype name to a plotting symbol
     order : tuple
         Order in which to plot the phenotypes (e.g. if there is a biological
@@ -185,21 +185,17 @@ def voyageplot(nmf_space_positions, feature_id, phenotype_to_color,
     ylabel : str, optional
         How to label the y-axis
     """
-    df = nmf_space_positions.ix[feature_id]
+    df = waypoints.loc[feature_id]
 
     if ax is None:
         ax = plt.gca()
 
-    for color, s in df.groupby(phenotype_to_color, axis=0):
+    for color, s in df.groupby(hue, axis=0):
         phenotype = s.index[0]
-        marker = phenotype_to_marker[phenotype]
-        ax.plot(s.pc_1, s.pc_2, color=color, marker=marker, markersize=14,
-                alpha=0.75, label=phenotype, linestyle='none')
-
-    # ax.scatter(df.ix[:, 0], df.ix[:, 1], color=color, s=100, alpha=0.75)
-    # ax.legend(points, df.index.tolist())
-    ax.set_xlim(0, nmf_space_positions.ix[:, 0].max() * 1.05)
-    ax.set_ylim(0, nmf_space_positions.ix[:, 1].max() * 1.05)
+        m = marker[phenotype]
+        ax.plot(s.iloc[:, 0], s.iloc[:, 1], color=color, marker=m,
+                markersize=markersize, alpha=alpha, label=phenotype,
+                linestyle=linestyle)
 
     x = [df.ix[pheno, 0] for pheno in order if pheno in df.index]
     y = [df.ix[pheno, 1] for pheno in order if pheno in df.index]
@@ -213,3 +209,6 @@ def voyageplot(nmf_space_positions, feature_id, phenotype_to_color,
     if ylabel is not None:
         ax.set_ylabel(ylabel)
         ax.set_yticks([])
+
+    sns.despine(offset=3)
+    ax.set(xlim=(0, 1.05), ylim=(0, 1.05))
