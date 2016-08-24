@@ -3,4 +3,4 @@ pytest
 flake8
 coverage
 python-coveralls
-anchor
+anchor-bio
