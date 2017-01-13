@@ -80,8 +80,8 @@ def hexbin(x, y, *args, **kwargs):
 
 
 def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
-                      color='#262626', markeredgewidth=0.5,
-                      markeredgecolor='darkgrey', **kwargs):
+                      color='#262626', linewidth=0.5,
+                      linecolor='darkgrey', **kwargs):
     x = waypoints.iloc[:, 0]
     y = waypoints.iloc[:, 1]
 
@@ -91,9 +91,9 @@ def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
     if modality is not None:
         color = MODALITY_TO_COLOR[modality]
 
-    return ax.plot(x, y, 'o', color=color,
-                   alpha=alpha, markeredgewidth=markeredgewidth,
-                   markeredgecolor=markeredgecolor, **kwargs)
+    return ax.scatter(x, y, color=color,
+                   alpha=alpha, linewidth=linewidth,
+                      linecolor=linecolor, **kwargs)
 
 def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
                      gridsize=20, mincnt=1, bins='log', cmap='Greys',
