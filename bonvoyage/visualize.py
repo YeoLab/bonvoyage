@@ -91,8 +91,7 @@ def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
     if modality is not None:
         color = MODALITY_TO_COLOR[modality]
 
-    return ax.scatter(x, y, color=color,
-                   alpha=alpha, linewidth=linewidth,
+    return ax.scatter(x, y, color=color, alpha=alpha, linewidth=linewidth,
                       linecolor=linecolor, **kwargs)
 
 def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
