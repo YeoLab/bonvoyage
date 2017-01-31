@@ -204,6 +204,9 @@ def voyageplot(waypoints, feature_id, hue,
     ax.plot(x, y, zorder=-1, color='#262626', alpha=0.5, linewidth=1)
     ax.legend()
 
+    # Add a dotted line indicating the boundary of the waypoints
+    ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
+
     if xlabel is not None:
         ax.set_xlabel(xlabel)
         ax.set_xticks([])
