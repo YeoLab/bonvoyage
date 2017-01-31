@@ -150,6 +150,8 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
         for modality, modality_waypoints in waypoints.groupby(features_groupby):
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
+    # Add a dotted line indicating the boundary of the waypoints
+    ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
 
     sns.despine(offset=3)
     ax.set(xlabel=NEAR_ZERO, ylabel=NEAR_ONE,
