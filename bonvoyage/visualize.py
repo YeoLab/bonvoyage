@@ -130,7 +130,7 @@ def _waypoint_kde(waypoints, modality=None, ax=None, cmap='Greys',
 
 
 def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
-                 **kwargs):
+                 diagonal=True, **kwargs):
     if ax is None:
         ax = plt.gca()
 
@@ -151,7 +151,8 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
     # Add a dotted line indicating the boundary of the waypoints
-    ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
+    if diagonal:
+        ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
 
     sns.despine(offset=3)
     ax.set(xlabel=NEAR_ZERO, ylabel=NEAR_ONE,
@@ -162,7 +163,8 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
 
 def voyageplot(waypoints, feature_id, hue,
                marker, order, ax=None, xlabel=NEAR_ZERO,
-               ylabel=NEAR_ONE, markersize=14, alpha=0.75, linestyle='none'):
+               ylabel=NEAR_ONE, markersize=14, alpha=0.75, linestyle='none',
+               diagonal=True):
     """Plot 2d space traveled by individual splicing events
 
     Parameters
@@ -204,8 +206,9 @@ def voyageplot(waypoints, feature_id, hue,
     ax.plot(x, y, zorder=-1, color='#262626', alpha=0.5, linewidth=1)
     ax.legend()
 
-    # Add a dotted line indicating the boundary of the waypoints
-    ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
+    if diagonal:
+        # Add a dotted line indicating the boundary of the waypoints
+        ax.plot([0, 1], [1, 0], linestyle='--', color='k', linewidth=0.5)
 
     if xlabel is not None:
         ax.set_xlabel(xlabel)
