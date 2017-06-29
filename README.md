@@ -11,9 +11,29 @@ Transform percentage-based units into a 2d space to evaluate changes in distribu
 
 ## Installation
 
+To install `anchor`, we recommend using the [Anaconda Python Distribution]
+(http://anaconda.org/) and creating an environment, so the `anchor` code and
+dependencies don't interfere with anything else. Here is the command to create an
+environment:
+
+```
+conda create -n anchor-env pandas numpy matplotlib seaborn scikit-learn
+```
+
+### Stable (recommended)
+
+To install this code from the Python Package Index, you can install on the
+command line via `pip`:
+
+```
+pip install bonvoyage
+```
+
+### Bleeding-edge (for the brave)
+
 To install this code, clone this github repository and use `pip` to install
 
-    git clone git@github.com:olgabot/bonvoyage
+    git clone git@github.com:yeolab/bonvoyage
     cd bonvoyage
     pip install .  # The "." means "install *this*, the folder where I am now"
 
@@ -71,6 +91,8 @@ bonvoyage.waypointplot(waypoints, kind='scatter', features_groupby=modalities)
 ## History
 
 ### 1.0.0 (2017-06-28)
+
+* Added tests and examples
 
 ### 0.1.0 (2015-09-15)
 
