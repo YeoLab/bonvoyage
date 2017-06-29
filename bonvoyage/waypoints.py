@@ -5,6 +5,7 @@ from sklearn.decomposition import NMF
 
 from anchor.infotheory import binify
 
+
 class Waypoints(object):
 
     n_components = 2
@@ -25,7 +26,8 @@ class Waypoints(object):
         [near0_binned, near0_binned, near1_binned])
 
     def __init__(self):
-        self.nmf = NMF(n_components=self.n_components, init='nndsvdar')
+        self.nmf = NMF(n_components=self.n_components, init='nndsvdar',
+                       random_state=0)
         self.seed_data_transformed = pd.DataFrame(
             self.nmf.fit_transform(self.seed_data))
 
