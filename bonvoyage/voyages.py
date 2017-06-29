@@ -14,9 +14,10 @@ class Voyages(object):
         Parameters
         ----------
         waypoints : pandas.DataFrame
-            A ((group, features), 2) multiindexed dataframe with the groups labeled
-            in the transitions as the first level on the rows, and the feature ids
-            as the second level. Exactly the output from Waypoints.transform().
+            A ((group, features), 2) multiindexed dataframe with the groups
+            labeled in the transitions as the first level on the rows, and the
+            feature ids as the second level. Exactly the output from
+            Waypoints.transform().
         transitions : list of str pairs
             Which phenotype follows from one to the next, for calculating
             voyages between features
@@ -55,7 +56,8 @@ class Voyages(object):
                                               1: '$\Delta y$',
                                               'index': 'event_id'})
         distances['direction'] = distances.apply(self.direction, axis=1)
-        distances['transition'] = distances['group1'] + '-' + distances['group2']
+        distances['transition'] = distances['group1'] + '-' \
+            + distances['group2']
 
         return distances
 
@@ -71,8 +73,8 @@ class Voyages(object):
         Returns
         -------
         orientation : str
-            The direction of change, as a LaTeX arrow, e.g. r'$\nearrow$' (north
-            east arrow) for bimodal
+            The direction of change, as a LaTeX arrow, e.g. r'$\nearrow$'
+            (north east arrow) for bimodal
 
         >>> # Towards upper right --> bimodal
         >>> direction(pd.Series({'$\Delta x$': 0.4, '$\Delta y$': 0.1}))

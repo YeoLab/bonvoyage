@@ -44,4 +44,3 @@ class TestWaypoints(object):
         true = pd.read_csv(csv, index_col=0)
         true.columns = pd.RangeIndex(start=0, stop=20, step=1)
         pdt.assert_frame_equal(test, true)
-

@@ -143,5 +143,3 @@ class Waypoints(object):
 
     def binify(self, data):
         return binify(data, self.bins)
-
-

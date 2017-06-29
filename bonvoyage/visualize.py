@@ -64,8 +64,9 @@ def arrowplot(*args, **kwargs):
         y1, y2 = df.iloc[:, 1].values
         dx = x2 - x1
         dy = y2 - y1
-        ax.arrow(x1, y1, dx, dy, head_width=0.005, head_length=0.005, #fc='k', ec='k',
+        ax.arrow(x1, y1, dx, dy, head_width=0.005, head_length=0.005,
                  alpha=0.25, **kwargs)
+
 
 def hexbin(x, y, *args, **kwargs):
     """Wrapper around hexbin to create a colormap for that modality
@@ -93,6 +94,7 @@ def _waypoint_scatter(waypoints, modality=None, ax=None, alpha=0.5,
 
     return ax.scatter(x, y, color=color, alpha=alpha, linewidth=linewidth,
                       edgecolor=edgecolor, **kwargs)
+
 
 def _waypoint_hexbin(waypoints, modality=None, ax=None, edgecolor='darkgrey',
                      gridsize=20, mincnt=1, bins='log', cmap='Greys',
@@ -147,7 +149,8 @@ def waypointplot(waypoints, kind='hexbin', features_groupby=None, ax=None,
     if features_groupby is None:
         plotter(waypoints, ax=ax, **kwargs)
     else:
-        for modality, modality_waypoints in waypoints.groupby(features_groupby):
+        iterator = waypoints.groupby(features_groupby)
+        for modality, modality_waypoints in iterator:
             plotter(modality_waypoints, modality, ax=ax, **kwargs)
 
     # Add a dotted line indicating the boundary of the waypoints
