@@ -7,12 +7,8 @@ try:
 except ImportError:
     from distutils.core import setup
 
-
-with open('README.rst') as readme_file:
+with open('README.md') as readme_file:
     readme = readme_file.read()
-
-with open('HISTORY.rst') as history_file:
-    history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
     # TODO: put package requirements here
@@ -24,9 +20,9 @@ test_requirements = [
 
 setup(
     name='bonvoyage',
-    version='0.1.0',
+    version='1.0.0',
     description="Transform percentage-based units into a 2d space to evaluate changes in distribution with both magnitude and direction.",
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     author="Olga Botvinnik",
     author_email='olga.botvinnik@gmail.com',
     url='https://github.com/olgabot/bonvoyage',

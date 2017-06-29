@@ -2,7 +2,7 @@
 
 __author__ = 'Olga Botvinnik'
 __email__ = 'olga.botvinnik@gmail.com'
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 
 from .voyages import Voyages
 from .visualize import waypointplot
