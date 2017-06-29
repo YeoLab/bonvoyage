@@ -10,6 +10,12 @@ def data_folder():
 
 
 @pytest.fixture()
+def waypoints(data_folder):
+    csv = os.path.join(data_folder, 'waypoints_fit_transform.csv')
+    return pd.read_csv(csv, index_col=0)
+
+
+@pytest.fixture()
 def n_samples():
     return 20
 

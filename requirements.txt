@@ -4,3 +4,4 @@ flake8
 coverage
 python-coveralls
 anchor-bio
+pytest-cov

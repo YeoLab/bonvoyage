@@ -3,11 +3,26 @@ help:
 	@echo "test - run tests quickly"
 	@echo "coverage - check code coverage quickly"
 
+clean-pyc:
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -fr {} +
+
+
+coverage: clean-pyc
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -fr {} +
+
 test:
 	py.test
 
-coverage:
-	coverage run --source bonvoyage --omit=tests --module py.test
+coverage: clean-pyc
+	cp testing/matplotlibrc .
+	py.test --cov=./
+	rm matplotlibrc
 
 lint:
 	flake8 bonvoyage
