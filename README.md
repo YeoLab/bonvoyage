@@ -11,10 +11,10 @@ Transform percentage-based units into a 2d space to evaluate changes in distribu
 
 ## Installation
 
-To install `anchor`, we recommend using the [Anaconda Python Distribution]
-(http://anaconda.org/) and creating an environment, so the `anchor` code and
-dependencies don't interfere with anything else. Here is the command to create an
-environment:
+To install `anchor`, we recommend using the
+[Anaconda Python Distribution](http://anaconda.org/) and creating an
+environment, so the `anchor` code and dependencies don't interfere with
+anything else. Here is the command to create an environment:
 
 ```
 conda create -n anchor-env pandas numpy matplotlib seaborn scikit-learn
